@@ -1129,6 +1129,16 @@ mxShapeElectricalQFPIC.prototype.customProperties = [
 			{ val: 'gen', dispName: 'Generated' },
 			{ val: 'cust', dispName: 'Custom' },
 		],
+	},
+	{
+		name: 'indicator',
+		dispName: 'First Pin Indicator',
+		type: 'enum',
+		defVal: 'on',
+		enumList: [
+			{ val: 'on', dispName: 'ON' },
+			{ val: 'off', dispName: 'OFF' },
+		],
 	}
 ];
 
@@ -1162,6 +1172,7 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 	c.setFontColor(fontColor);
 	var startPin = mxUtils.getValue(this.style, 'startPin', 'sw');
 	var secondLabel = mxUtils.getValue(this.style, 'secondLabel', 'non');
+	var indicator = mxUtils.getValue(this.style, 'indicator', 'on');
 	
 	if (pinStyle == 'line')
 	{
@@ -1499,27 +1510,30 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 	
 	c.setShadow(false);
 	
-	if (w > 40)
+	if (indicator == 'on')
 	{
-		c.setFillColor(mxUtils.getValue(this.style, 'strokeColor', '#000000'));
+		if (w > 40)
+		{
+			c.setFillColor(mxUtils.getValue(this.style, 'strokeColor', '#000000'));
 
-		c.begin();
-		
-		switch(startPin) {
-		  case 'nw':
-				c.ellipse(15, 15, 10, 10);
-		    break;
-		  case 'ne':
-				c.ellipse(w - 25, 15, 10, 10);
-		    break;
-		  case 'se':
-				c.ellipse(w - 25, h - 25, 10, 10);
-		    break;
-		  default:
-				c.ellipse(15, h - 25, 10, 10);
+			c.begin();
+
+			switch(startPin) {
+			  case 'nw':
+					c.ellipse(15, 15, 10, 10);
+			    break;
+			  case 'ne':
+					c.ellipse(w - 25, 15, 10, 10);
+			    break;
+			  case 'se':
+					c.ellipse(w - 25, h - 25, 10, 10);
+			    break;
+			  default:
+					c.ellipse(15, h - 25, 10, 10);
+			}
+
+			c.fillAndStroke();
 		}
-		
-		c.fillAndStroke();
 	}
 };
 
