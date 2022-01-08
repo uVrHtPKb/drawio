@@ -1118,7 +1118,18 @@ mxShapeElectricalQFPIC.prototype.customProperties = [
 			{val:'cust', dispName:'Custom'}
 		]},
 	{name: 'labelCount', dispName: 'Number of Labels', type: 'int', defVal: 40, dependentProps: ['labelNames']},
-	{name: 'labelNames', dispName: 'Label Names', type: 'staticArr', subType: 'string', sizeProperty: 'labelCount', subDefVal: 'a'}
+	{name: 'labelNames', dispName: 'Label Names', type: 'staticArr', subType: 'string', sizeProperty: 'labelCount', subDefVal: 'a'},
+	{
+		name: 'secondLabel',
+		dispName: 'Second Label',
+		type: 'enum',
+		defVal: 'non',
+		enumList: [
+			{ val: 'non', dispName: 'None' },
+			{ val: 'gen', dispName: 'Generated' },
+			{ val: 'cust', dispName: 'Custom' },
+		],
+	}
 ];
 
 /**
@@ -1150,6 +1161,7 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 	var fontColor = mxUtils.getValue(this.style, 'fontColor', '#000000');
 	c.setFontColor(fontColor);
 	var startPin = mxUtils.getValue(this.style, 'startPin', 'sw');
+	var secondLabel = mxUtils.getValue(this.style, 'secondLabel', 'non');
 	
 	if (pinStyle == 'line')
 	{
@@ -1193,6 +1205,22 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 				c.text(20, currH, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
 			}
 			
+			if (secondLabel == 'gen')
+			{
+				c.text(5, currH - 10, 0, 0, currPinNum.toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+			}
+			else if (secondLabel == 'cust')
+			{
+				if (currPinNum - 1 < labelNames.length)
+				{
+					c.text(5, currH - 10, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+				}
+			}
+			else
+			{
+				// None
+			}
+
 			//east pins
 			switch(startPin) {
 			  case 'nw':
@@ -1217,6 +1245,22 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 				c.text(w - 20, currH, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
 			}
 			
+			if (secondLabel == 'gen')
+			{
+				c.text(w - 5, currH - 10, 0, 0, pc2.toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+			}
+			else if (secondLabel == 'cust')
+			{
+				if (pc2 - 1 < labelNames.length)
+				{
+					c.text(w - 5, currH - 10, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0); // maruno
+				}
+			}
+			else
+			{
+				// None
+			}
+
 			currH = currH + pinSpacing;
 			pinCount++;
 		}
@@ -1255,6 +1299,22 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 				c.text(currH, h - 20, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
 			}
 
+			if (secondLabel == 'gen')
+			{
+				c.text(currH - 10, h - 5, 0, 0, currPinNum.toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+			}
+			else if (secondLabel == 'cust')
+			{
+				if (currPinNum - 1 < labelNames.length)
+				{
+					c.text(currH - 10, h - 5, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+				}
+			}
+			else
+			{
+				// None
+			}
+
 			//north pins
 			switch(startPin) {
 			  case 'nw':
@@ -1279,6 +1339,22 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 				c.text(currH, 20, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
 			}
 			
+			if (secondLabel == 'gen')
+			{
+				c.text(currH - 10, 5, 0, 0, pc2.toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+			}
+			else if (secondLabel == 'cust')
+			{
+				if (pc2 - 1 < labelNames.length)
+				{
+					c.text(currH - 10, 5, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+				}
+			}
+			else
+			{
+				// None
+			}
+
 			currH = currH + pinSpacing;
 			pinCount++;
 		}
