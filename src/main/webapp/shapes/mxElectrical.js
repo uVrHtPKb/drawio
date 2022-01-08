@@ -1139,6 +1139,16 @@ mxShapeElectricalQFPIC.prototype.customProperties = [
 			{ val: 'on', dispName: 'ON' },
 			{ val: 'off', dispName: 'OFF' },
 		],
+	},
+	{
+		name: 'cornerCut',
+		dispName: 'Corner Cut',
+		type: 'enum',
+		defVal: 'on',
+		enumList: [
+			{ val: 'on', dispName: 'ON' },
+			{ val: 'off', dispName: 'OFF' },
+		],
 	}
 ];
 
@@ -1149,17 +1159,31 @@ mxShapeElectricalQFPIC.prototype.customProperties = [
 */
 mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 {
+	var cut = mxUtils.getValue(this.style, 'cornerCut', 'on');
+
 	c.translate(x, y);
 	
 	c.begin();
-	c.moveTo(15, 10);
-	c.lineTo(w - 15, 10);
-	c.lineTo(w - 10, 15);
-	c.lineTo(w - 10, h - 15);
-	c.lineTo(w - 15, h - 10);
-	c.lineTo(15, h - 10);
-	c.lineTo(10, h - 15);
-	c.lineTo(10, 15);
+	if (cut == 'on')
+	{
+		c.moveTo(15, 10);
+		c.lineTo(w - 15, 10);
+		c.lineTo(w - 10, 15);
+		c.lineTo(w - 10, h - 15);
+		c.lineTo(w - 15, h - 10);
+		c.lineTo(15, h - 10);
+		c.lineTo(10, h - 15);
+		c.lineTo(10, 15);
+	}
+	else
+	{
+		// simple rectangle
+		c.moveTo(10, 10);
+		c.lineTo(w - 10, 10);
+		c.lineTo(w - 10, h - 10);
+		c.lineTo(10, h - 10);
+		c.lineTo(10, 10);
+	}
 	c.close();
 	c.fillAndStroke();
 
