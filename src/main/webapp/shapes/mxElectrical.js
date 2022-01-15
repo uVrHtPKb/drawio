@@ -736,7 +736,28 @@ mxShapeElectricalDualInLineIC.prototype.customProperties = [
 			{val:'cust', dispName:'Custom'}
 		]},
 	{name: 'labelCount', dispName: 'Number of Labels', type: 'int', defVal: 20, dependentProps: ['labelNames']},
-	{name: 'labelNames', dispName: 'Label Names', type: 'staticArr', subType: 'string', sizeProperty: 'labelCount', subDefVal: 'a'}
+	{name: 'labelNames', dispName: 'Label Names', type: 'staticArr', subType: 'string', sizeProperty: 'labelCount', subDefVal: 'a'},
+	{
+		name: 'secondLabel',
+		dispName: 'Second Label',
+		type: 'enum',
+		defVal: 'non',
+		enumList: [
+			{ val: 'non', dispName: 'None' },
+			{ val: 'gen', dispName: 'Generated' },
+			{ val: 'cust', dispName: 'Custom' },
+		],
+	},
+	{
+		name: 'indicator',
+		dispName: 'First Pin Indicator',
+		type: 'enum',
+		defVal: 'on',
+		enumList: [
+			{ val: 'on', dispName: 'ON' },
+			{ val: 'off', dispName: 'OFF' },
+		],
+	}
 ];
 
 /**
@@ -769,6 +790,8 @@ mxShapeElectricalDualInLineIC.prototype.paintVertexShape = function(c, x, y, w, 
 	var pinSpacing = parseFloat(mxUtils.getValue(this.style, 'pinSpacing', '20'));
 	var pinStyle = mxUtils.getValue(this.style, 'pinStyle', 'line');
 	var fontSize = parseFloat(mxUtils.getValue(this.style, 'fontSize', '12'));
+	var secondLabel = mxUtils.getValue(this.style, 'secondLabel', 'non');
+	var indicator = mxUtils.getValue(this.style, 'indicator', 'on');
 	
 	if (startPin == 'n' || startPin == 's')
 	{
@@ -805,6 +828,7 @@ mxShapeElectricalDualInLineIC.prototype.paintVertexShape = function(c, x, y, w, 
 					var currPinNum = pinsOne + pinCount;
 				}
 
+				//west pins
 				if (pinLabelType == 'gen')
 				{
 					c.text(20, currH, 0, 0, currPinNum.toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
@@ -814,6 +838,22 @@ mxShapeElectricalDualInLineIC.prototype.paintVertexShape = function(c, x, y, w, 
 					c.text(20, currH, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
 				}
 				
+				if (secondLabel == 'gen')
+				{
+					c.text(5, currH - 10, 0, 0, currPinNum.toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+				}
+				else if (secondLabel == 'cust')
+				{
+					if (currPinNum - 1 < labelNames.length)
+					{
+						c.text(5, currH - 10, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+					}
+				}
+				else
+				{
+					// None
+				}
+
 				if (startPin == 'n')
 				{
 					var pc2 = 2 * pinsOne - pinCount + 1;
@@ -823,6 +863,7 @@ mxShapeElectricalDualInLineIC.prototype.paintVertexShape = function(c, x, y, w, 
 					var pc2 = pinsOne - pinCount + 1;
 				}
 				
+				//east pins
 				if (pinLabelType == 'gen')
 				{
 					c.text(w - 20, currH, 0, 0, pc2.toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
@@ -832,6 +873,22 @@ mxShapeElectricalDualInLineIC.prototype.paintVertexShape = function(c, x, y, w, 
 					c.text(w - 20, currH, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
 				}
 				
+				if (secondLabel == 'gen')
+				{
+					c.text(w - 5, currH - 10, 0, 0, pc2.toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+				}
+				else if (secondLabel == 'cust')
+				{
+					if (pc2 - 1 < labelNames.length)
+					{
+						c.text(w - 5, currH - 10, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0); // maruno
+					}
+				}
+				else
+				{
+					// None
+				}
+
 				currH = currH + pinSpacing;
 				pinCount++;
 			}
@@ -854,6 +911,7 @@ mxShapeElectricalDualInLineIC.prototype.paintVertexShape = function(c, x, y, w, 
 					var currPinNum = 2 * pinsOne - pinCount + 1;
 				}
 				
+				//north pins
 				if (pinLabelType == 'gen')
 				{
 					c.text(currH, 20, 0, 0, currPinNum.toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
@@ -865,6 +923,43 @@ mxShapeElectricalDualInLineIC.prototype.paintVertexShape = function(c, x, y, w, 
 				
 				if (startPin == 'e')
 				{
+					if (secondLabel == 'gen')
+					{
+						c.text(currH + 10, 5, 0, 0, currPinNum.toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 90);
+					}
+					else if (secondLabel == 'cust')
+					{
+						if (currPinNum - 1 < labelNames.length)
+						{
+							c.text(currH + 10, 5, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 90);
+						}
+					}
+					else
+					{
+						// None
+					}
+				}
+				else
+				{
+					if (secondLabel == 'gen')
+					{
+						c.text(currH - 10, 5, 0, 0, currPinNum.toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+					}
+					else if (secondLabel == 'cust')
+					{
+						if (currPinNum - 1 < labelNames.length)
+						{
+							c.text(currH - 10, 5, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+						}
+					}
+					else
+					{
+						// None
+					}
+				}
+	
+				if (startPin == 'e')
+				{
 					var pc2 = pinsOne + pinCount;
 				}
 				else
@@ -872,6 +967,7 @@ mxShapeElectricalDualInLineIC.prototype.paintVertexShape = function(c, x, y, w, 
 					var pc2 = pinCount;
 				}
 				
+				//south pins
 				if (pinLabelType == 'gen')
 				{
 					c.text(currH, h - 20, 0, 0, pc2.toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
@@ -881,6 +977,43 @@ mxShapeElectricalDualInLineIC.prototype.paintVertexShape = function(c, x, y, w, 
 					c.text(currH, h - 20, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
 				}
 				
+				if (startPin == 'e')
+				{
+					if (secondLabel == 'gen')
+					{
+						c.text(currH + 10, h - 5, 0, 0, pc2.toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 90);
+					}
+					else if (secondLabel == 'cust')
+					{
+						if (pc2 - 1 < labelNames.length)
+						{
+							c.text(currH + 10, h - 5, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 90);
+						}
+					}
+					else
+					{
+						// None
+					}
+				}
+				else
+				{
+					if (secondLabel == 'gen')
+					{
+						c.text(currH - 10, h - 5, 0, 0, pc2.toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+					}
+					else if (secondLabel == 'cust')
+					{
+						if (pc2 - 1 < labelNames.length)
+						{
+							c.text(currH - 10, h - 5, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+						}
+					}
+					else
+					{
+						// None
+					}
+				}
+
 				currH = currH + pinSpacing;
 				pinCount++;
 			}
@@ -1005,36 +1138,39 @@ mxShapeElectricalDualInLineIC.prototype.paintVertexShape = function(c, x, y, w, 
 	
 	c.begin();
 	
-	switch(startPin) {
-	  case 'e':
-			if (h > 40)
-			{
-				c.moveTo(w, h * 0.5 - 10);
-				c.arcTo(12, 12, 0, 0, 0, w, h * 0.5 + 10);
-			}
-	    break;
-	  case 's':
-			if (w > 40)
-			{
-				c.moveTo(w * 0.5 - 10, h);
-				c.arcTo(12, 12, 0, 0, 1, w * 0.5 + 10, h);
-			}
-	    break;
-	  case 'w':
-			if (h > 40)
-			{
-				c.moveTo(0, h * 0.5 - 10);
-				c.arcTo(12, 12, 0, 0, 1, 0, h * 0.5 + 10);
-			}
-	    break;
-	  default:
-			if (w > 40)
-			{
-				c.moveTo(w * 0.5 - 10, 0);
-				c.arcTo(12, 12, 0, 0, 0, w * 0.5 + 10, 0);
-			}
+	if (indicator == 'on')
+	{
+		switch(startPin) {
+			case 'e':
+				if (h > 40)
+				{
+					c.moveTo(w, h * 0.5 - 10);
+					c.arcTo(12, 12, 0, 0, 0, w, h * 0.5 + 10);
+				}
+			break;
+			case 's':
+				if (w > 40)
+				{
+					c.moveTo(w * 0.5 - 10, h);
+					c.arcTo(12, 12, 0, 0, 1, w * 0.5 + 10, h);
+				}
+			break;
+			case 'w':
+				if (h > 40)
+				{
+					c.moveTo(0, h * 0.5 - 10);
+					c.arcTo(12, 12, 0, 0, 1, 0, h * 0.5 + 10);
+				}
+			break;
+			default:
+				if (w > 40)
+				{
+					c.moveTo(w * 0.5 - 10, 0);
+					c.arcTo(12, 12, 0, 0, 0, w * 0.5 + 10, 0);
+				}
+		}
 	}
-	
+		
 	c.stroke();
 };
 
