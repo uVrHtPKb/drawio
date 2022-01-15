@@ -1118,7 +1118,38 @@ mxShapeElectricalQFPIC.prototype.customProperties = [
 			{val:'cust', dispName:'Custom'}
 		]},
 	{name: 'labelCount', dispName: 'Number of Labels', type: 'int', defVal: 40, dependentProps: ['labelNames']},
-	{name: 'labelNames', dispName: 'Label Names', type: 'staticArr', subType: 'string', sizeProperty: 'labelCount', subDefVal: 'a'}
+	{name: 'labelNames', dispName: 'Label Names', type: 'staticArr', subType: 'string', sizeProperty: 'labelCount', subDefVal: 'a'},
+	{
+		name: 'secondLabel',
+		dispName: 'Second Label',
+		type: 'enum',
+		defVal: 'non',
+		enumList: [
+			{ val: 'non', dispName: 'None' },
+			{ val: 'gen', dispName: 'Generated' },
+			{ val: 'cust', dispName: 'Custom' },
+		],
+	},
+	{
+		name: 'indicator',
+		dispName: 'First Pin Indicator',
+		type: 'enum',
+		defVal: 'on',
+		enumList: [
+			{ val: 'on', dispName: 'ON' },
+			{ val: 'off', dispName: 'OFF' },
+		],
+	},
+	{
+		name: 'cornerCut',
+		dispName: 'Corner Cut',
+		type: 'enum',
+		defVal: 'on',
+		enumList: [
+			{ val: 'on', dispName: 'ON' },
+			{ val: 'off', dispName: 'OFF' },
+		],
+	}
 ];
 
 /**
@@ -1128,17 +1159,31 @@ mxShapeElectricalQFPIC.prototype.customProperties = [
 */
 mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 {
+	var cut = mxUtils.getValue(this.style, 'cornerCut', 'on');
+
 	c.translate(x, y);
 	
 	c.begin();
-	c.moveTo(15, 10);
-	c.lineTo(w - 15, 10);
-	c.lineTo(w - 10, 15);
-	c.lineTo(w - 10, h - 15);
-	c.lineTo(w - 15, h - 10);
-	c.lineTo(15, h - 10);
-	c.lineTo(10, h - 15);
-	c.lineTo(10, 15);
+	if (cut == 'on')
+	{
+		c.moveTo(15, 10);
+		c.lineTo(w - 15, 10);
+		c.lineTo(w - 10, 15);
+		c.lineTo(w - 10, h - 15);
+		c.lineTo(w - 15, h - 10);
+		c.lineTo(15, h - 10);
+		c.lineTo(10, h - 15);
+		c.lineTo(10, 15);
+	}
+	else
+	{
+		// simple rectangle
+		c.moveTo(10, 10);
+		c.lineTo(w - 10, 10);
+		c.lineTo(w - 10, h - 10);
+		c.lineTo(10, h - 10);
+		c.lineTo(10, 10);
+	}
 	c.close();
 	c.fillAndStroke();
 
@@ -1150,6 +1195,8 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 	var fontColor = mxUtils.getValue(this.style, 'fontColor', '#000000');
 	c.setFontColor(fontColor);
 	var startPin = mxUtils.getValue(this.style, 'startPin', 'sw');
+	var secondLabel = mxUtils.getValue(this.style, 'secondLabel', 'non');
+	var indicator = mxUtils.getValue(this.style, 'indicator', 'on');
 	
 	if (pinStyle == 'line')
 	{
@@ -1193,6 +1240,22 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 				c.text(20, currH, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
 			}
 			
+			if (secondLabel == 'gen')
+			{
+				c.text(5, currH - 10, 0, 0, currPinNum.toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+			}
+			else if (secondLabel == 'cust')
+			{
+				if (currPinNum - 1 < labelNames.length)
+				{
+					c.text(5, currH - 10, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+				}
+			}
+			else
+			{
+				// None
+			}
+
 			//east pins
 			switch(startPin) {
 			  case 'nw':
@@ -1217,6 +1280,22 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 				c.text(w - 20, currH, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
 			}
 			
+			if (secondLabel == 'gen')
+			{
+				c.text(w - 5, currH - 10, 0, 0, pc2.toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+			}
+			else if (secondLabel == 'cust')
+			{
+				if (pc2 - 1 < labelNames.length)
+				{
+					c.text(w - 5, currH - 10, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0); // maruno
+				}
+			}
+			else
+			{
+				// None
+			}
+
 			currH = currH + pinSpacing;
 			pinCount++;
 		}
@@ -1255,6 +1334,22 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 				c.text(currH, h - 20, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
 			}
 
+			if (secondLabel == 'gen')
+			{
+				c.text(currH - 10, h - 5, 0, 0, currPinNum.toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+			}
+			else if (secondLabel == 'cust')
+			{
+				if (currPinNum - 1 < labelNames.length)
+				{
+					c.text(currH - 10, h - 5, 0, 0, labelNames[currPinNum - 1].toString(), mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+				}
+			}
+			else
+			{
+				// None
+			}
+
 			//north pins
 			switch(startPin) {
 			  case 'nw':
@@ -1279,6 +1374,22 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 				c.text(currH, 20, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
 			}
 			
+			if (secondLabel == 'gen')
+			{
+				c.text(currH - 10, 5, 0, 0, pc2.toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+			}
+			else if (secondLabel == 'cust')
+			{
+				if (pc2 - 1 < labelNames.length)
+				{
+					c.text(currH - 10, 5, 0, 0, labelNames[pc2 - 1].toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 270);
+				}
+			}
+			else
+			{
+				// None
+			}
+
 			currH = currH + pinSpacing;
 			pinCount++;
 		}
@@ -1423,27 +1534,30 @@ mxShapeElectricalQFPIC.prototype.paintVertexShape = function(c, x, y, w, h)
 	
 	c.setShadow(false);
 	
-	if (w > 40)
+	if (indicator == 'on')
 	{
-		c.setFillColor(mxUtils.getValue(this.style, 'strokeColor', '#000000'));
+		if (w > 40)
+		{
+			c.setFillColor(mxUtils.getValue(this.style, 'strokeColor', '#000000'));
 
-		c.begin();
-		
-		switch(startPin) {
-		  case 'nw':
-				c.ellipse(15, 15, 10, 10);
-		    break;
-		  case 'ne':
-				c.ellipse(w - 25, 15, 10, 10);
-		    break;
-		  case 'se':
-				c.ellipse(w - 25, h - 25, 10, 10);
-		    break;
-		  default:
-				c.ellipse(15, h - 25, 10, 10);
+			c.begin();
+
+			switch(startPin) {
+			  case 'nw':
+					c.ellipse(15, 15, 10, 10);
+			    break;
+			  case 'ne':
+					c.ellipse(w - 25, 15, 10, 10);
+			    break;
+			  case 'se':
+					c.ellipse(w - 25, h - 25, 10, 10);
+			    break;
+			  default:
+					c.ellipse(15, h - 25, 10, 10);
+			}
+
+			c.fillAndStroke();
 		}
-		
-		c.fillAndStroke();
 	}
 };
 
